@@ -14,4 +14,9 @@ run the software on your own machine and access your data. We don't just build t
 we build an ecosystem where you can contribute by coding, designing, or translating, helping us 
 shape a future that no single entity can switch off.
 
+### Contribute
+We don't just build tools; we build an ecosystem. Join us by **coding, designing, or translating** to help us shape a future that no single entity can switch off.
+
+[Twitter(X)](https://x.com/flowresearch_) • [LinkedIn](https://linkedin.com/company/flow-research1) • [Substack](https://substack.com/@flowresearch)
+
 We need Sovereign AI infrastructure.
