@@ -12,7 +12,7 @@ By keeping our code open, we give you the power to verify exactly how your data 
 Even if our organization disappeared tomorrow, you could still 
 run the software on your own machine and access your data. We don't just build tools; 
 we build an ecosystem where you can contribute by coding, designing, or translating, helping us 
-shape a future that no single entity can switch off.
+shape our future.
 
 ### Contribute
 Join us: [Twitter(X)](https://x.com/flowresearch_) • [LinkedIn](https://linkedin.com/company/flow-research1) • [Substack](https://substack.com/@flowresearch)
