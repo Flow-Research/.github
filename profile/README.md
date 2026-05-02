@@ -1,5 +1,3 @@
-![Flow concept](https://drive.google.com/uc?export=view&id=11-YO0bh2xKSGA4Zoi85Yx8zoM8vZI2Jy "Flow")
-
 **The core idea:** Each user controls their own Knowledge Base. They can share parts of it with others on the network. The network enforces access rules and tracks contributions.
 
 ## Don’t take our word for it, read our code.
