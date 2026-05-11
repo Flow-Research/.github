@@ -8,7 +8,7 @@ Today, we use math and open-source code to guarantee it.
 
 By keeping our code open, we give you the power to verify exactly how your data is handled. 
 Even if our organization disappeared tomorrow, you could still 
-run the software on your own machine and access your data. We's building an ecosystem where you can contribute by coding, designing, or translating, 
+run the software on your own machine and access your data. We're building an ecosystem where you can contribute by coding, designing, or translating, 
 helping us shape our future.
 
 ### Contribute
