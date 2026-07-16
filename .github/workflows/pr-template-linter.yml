@@ -1,0 +1,54 @@
+name: PR Template Linter
+
+on:
+  workflow_call:
+    inputs:
+      pr-body:
+        description: 'The PR body text to validate'
+        required: true
+        type: string
+
+jobs:
+  lint-pr-template:
+    name: Lint PR Template
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR body against template
+        shell: bash
+        env:
+          PR_BODY: ${{ inputs.pr-body }}
+        run: |
+          set -euo pipefail
+
+          REQUIRED_SECTIONS=(
+            "Scope"
+            "Invariants"
+            "Design"
+            "Duplicate and idempotency review"
+            "Privacy and security review"
+            "Verification"
+          )
+
+          MISSING=0
+          for section in "${REQUIRED_SECTIONS[@]}"; do
+            if ! echo "$PR_BODY" | grep -qiE "^\s*#+\s*${section}\s*$"; then
+              echo "::error::Missing required PR section: ${section}"
+              MISSING=1
+            fi
+          done
+
+          VERIFICATION_BLOCK=$(echo "$PR_BODY" | sed -n '/^## Verification/,/^## /p')
+          if [ -n "$VERIFICATION_BLOCK" ]; then
+            CHECKED=$(echo "$VERIFICATION_BLOCK" | grep -cE '\[x\]' || true)
+            TOTAL=$(echo "$VERIFICATION_BLOCK" | grep -cE '\[ \]|\[x\]' || true)
+            if [ "$TOTAL" -gt 0 ] && [ "$CHECKED" -eq 0 ]; then
+              echo "::warning::Verification section has no checked boxes"
+            fi
+          fi
+
+          if [ "$MISSING" -eq 1 ]; then
+            echo "::error::PR body is missing required sections from PULL_REQUEST_TEMPLATE.md"
+            exit 1
+          fi
+
+          echo "::notice::PR template validation passed"
