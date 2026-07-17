@@ -48,7 +48,7 @@ jobs:
 
           # Fail if disableOriginCheck: true is present
           TRUE_MATCHES=$(grep -rn 'disableOriginCheck' "$SCAN_PATH" \
-            --include='*.ts' --include='*.js' \
+            --include='*.ts' --include='*.js' --include='*.json' --include='*.yaml' --include='*.yml' \
             --exclude-dir=node_modules --exclude-dir=.git \
             | grep -iE 'disableOriginCheck.*true' | grep -vE '(node_modules|\.test|\.spec|known.gap)' || true)
 
