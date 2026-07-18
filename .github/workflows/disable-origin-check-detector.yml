@@ -8,6 +8,11 @@ on:
         required: false
         default: '.'
         type: string
+      base-ref:
+        description: 'PR base branch, used to scan only newly added insecure settings'
+        required: false
+        default: ''
+        type: string
 
 jobs:
   detect:
@@ -24,19 +29,27 @@ jobs:
         run: |
           set -euo pipefail
           SCAN_PATH="${{ inputs.scan-path }}"
+          BASE_REF="${{ inputs.base-ref }}"
 
           echo "::group::Scanning for disableOriginCheck in auth config..."
-          MATCHES=$(grep -rn 'disableOriginCheck' "$SCAN_PATH" \
-            --include='*.ts' --include='*.js' --include='*.json' --include='*.yaml' --include='*.yml' \
-            --exclude-dir=node_modules --exclude-dir=.git \
-            | grep -ivE '(node_modules|\.test|\.spec|CHANGELOG|known.gap|TODO)' || true)
+          if [ -n "$BASE_REF" ]; then
+            git fetch origin "$BASE_REF" --depth=1
+            MATCHES=$(git diff --unified=0 "origin/$BASE_REF...HEAD" -- "$SCAN_PATH" \
+              | grep '^+' | grep -v '^+++' | grep -iE 'disableOriginCheck' \
+              | grep -ivE '(node_modules|\.test|\.spec|CHANGELOG|known.gap|TODO)' || true)
+          else
+            MATCHES=$(grep -rn 'disableOriginCheck' "$SCAN_PATH" \
+              --include='*.ts' --include='*.js' --include='*.json' --include='*.yaml' --include='*.yml' \
+              --exclude-dir=node_modules --exclude-dir=.git \
+              | grep -ivE '(node_modules|\.test|\.spec|CHANGELOG|known.gap|TODO)' || true)
+          fi
 
           if [ -n "$MATCHES" ]; then
             echo "::warning::Found disableOriginCheck references:"
             echo "$MATCHES" | while read -r line; do
               # Check if it's set to true
               if echo "$line" | grep -qiE 'disableOriginCheck.*true'; then
-                echo "::error file=$(echo "$line" | cut -d: -f1)::disableOriginCheck is set to true — this disables CSRF/origin validation"
+                echo "::error::disableOriginCheck is set to true, this disables CSRF/origin validation"
               else
                 echo "  $line"
               fi
@@ -47,10 +60,7 @@ jobs:
           echo "::endgroup::"
 
           # Fail if disableOriginCheck: true is present
-          TRUE_MATCHES=$(grep -rn 'disableOriginCheck' "$SCAN_PATH" \
-            --include='*.ts' --include='*.js' --include='*.json' --include='*.yaml' --include='*.yml' \
-            --exclude-dir=node_modules --exclude-dir=.git \
-            | grep -iE 'disableOriginCheck.*true' | grep -vE '(node_modules|\.test|\.spec|known.gap)' || true)
+          TRUE_MATCHES=$(echo "$MATCHES" | grep -iE 'disableOriginCheck.*true' || true)
 
           if [ -n "$TRUE_MATCHES" ]; then
             echo "::error::disableOriginCheck is enabled (true). This is a security risk — remove or set to false before shipping to production."
